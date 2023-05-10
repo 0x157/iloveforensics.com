@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 0x157</title>
+    <link>https://iloveforensics.com/posts/</link>
+    <description>Recent content in Posts on 0x157</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://iloveforensics.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PWNME CTF Qualifications - Silver [Forensics] Write-up</title>
+      <link>https://iloveforensics.com/posts/pwnmectf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://iloveforensics.com/posts/pwnmectf/</guid>
+      <description>Difficulty Medium     Category Forensics    First things first, lets download the challenge files and extract them if neccesarry. Once that is done with we will see one important file that we are gonna be working with, which is usb_drive.img.
+Okay great ! We can now proceed further and examine what we are really working with. Lets see what type of file we just extracted is.</description>
+      <content>&lt;p&gt;&lt;img src=&#34;chall.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Difficulty&lt;/th&gt;
+&lt;th&gt;Medium&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Category&lt;/td&gt;
+&lt;td&gt;Forensics&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;First things first, lets download the challenge files and extract them if neccesarry. Once that is done with we will see one important file that we are gonna be working with, which is &lt;code&gt;usb_drive.img&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;files.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Okay great ! We can now proceed further and examine what we are really working with. Lets see what type of file we just extracted is.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;$ file usb_drive.img 
+usb_drive.img: DOS/MBR boot sector
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now that the file type we are working with is known to us, we can surely say its a disk image  with a FAT32 file system. The next step would be to do a read only mount of the disk on our own machine. Which can easily be done with &lt;code&gt;Autopsy&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;adding_img.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s exactly what we wanted to see ! Now its time to go further down and see whats inside the file system.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;inside_fs.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;NOTE &amp;ndash;&amp;gt;&lt;/strong&gt; Those files that we see that are highlighted with red are deleted files on the disk. Which also means they would be the most interesting to look at once recovered. So lets export them to a folder on our machine.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;DOING ALL THIS WOULD BE BETTER IN A VM, THAT IS READY TO BE BROKEN. BECAUSE ONCE AGAIN WE ARE DEALING WITH REAL WORLD MALWARE.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;exported.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;This was the part that probably took me the longest to do, and im sure a lot of other teams got stuck on this part for awhile. I examied the &lt;code&gt;.sh&lt;/code&gt; script and it wasnt doing anything interesting that could help us further down in the investigation. On top of that i did full &lt;code&gt;Steganography Analysis&lt;/code&gt; on both , the PDF and PNG, yet i havent found anything. Finally there was one file left which was an &lt;strong&gt;ELF&lt;/strong&gt; executable. It started with basic static analysis of the binary, for example checking strings and throwing it in Ghidra. Later i found out that the binary was written in GoLang and for me it would be pretty hard to Reverse Engineer it, so i decided to try running it inside a VM that is isolated from my host and internal network. Not only that but i also captured traffic on wireshark for potential network based indicators.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;I ran this binary throught Virus Total and Hybrid Analysis and both of the vendors flagged it as malicious&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;vm.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Right after this i quickly downloaded Wireshark with &lt;code&gt;sudo apt install wireshark&lt;/code&gt; and was ready to see whats inside this malware.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;network.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Lets see whats going on in those packets , we see that my host is trying to reach out to &lt;code&gt;178.62.67.181:443&lt;/code&gt;. But it was unsuccessful, instead how about we try to go to the website ourselves. Obviously safety is first so im gonna be using &lt;code&gt;https://www.hidemyass.com/en-us/proxy&lt;/code&gt; to access that website.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;flag.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;WOAH ! Once we got to the website , we see an image at first my heart dropped because i thought there was gonna be more to it, but once looked at closely i found the flag !&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;PWNME&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;1_L0v3_U53_C2&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After all this challenge was definetely fun and enjoying in a way. I&amp;rsquo;ve learned to not overthink simplest things and hopefully that will stay with me for the future tournaments with my team.&lt;/p&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>
