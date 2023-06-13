@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Welcome</title>
+    <link>https://iloveforensics.com/posts/</link>
+    <description>Recent content in Posts on Welcome</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://iloveforensics.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BYUCTF 2023 - VMception [Forensics] Writeup</title>
+      <link>https://iloveforensics.com/posts/byuctf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://iloveforensics.com/posts/byuctf/</guid>
+      <description>Difficulty Medium     Category Forensics    Let&amp;rsquo;s begin by quickly downloading the file from the link given in the challenge description. It&amp;rsquo;s 3.2 GB so might take sometime, depends on your internet speed.
+Once we got the file on our machine, lets see what type of file .vdi is, and to no surprise its a virtual hard disk of a Virtual Machine. We can simply open it with VirtualBox or VMware.</description>
+      <content>&lt;p&gt;&lt;img src=&#34;challenge.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Difficulty&lt;/th&gt;
+&lt;th&gt;Medium&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Category&lt;/td&gt;
+&lt;td&gt;Forensics&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Let&amp;rsquo;s begin by quickly downloading the file from the link given in the challenge description. It&amp;rsquo;s 3.2 GB so might take sometime, depends on your internet speed.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;init.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Once we got the file on our machine, lets see what type of file &lt;code&gt;.vdi&lt;/code&gt; is, and to no surprise its a virtual hard disk of a &lt;strong&gt;Virtual Machine&lt;/strong&gt;. We can simply open it with VirtualBox or VMware. So that was my next step. For this part we can just sign in with the credentials that were given in the challenge description. &lt;code&gt;cosmo:password&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;vm.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Once I was logged in, I started looking for the flag in different spaces, whether it was checking mounted file systems, crontabs, configuration files, using find &lt;code&gt;find / -name &amp;quot;*.txt&amp;quot; -type f -exec cat {} \; 2&amp;gt; /dev/null | grep &amp;quot;byuctf{&amp;quot;&lt;/code&gt;. None of it worked and I started getting frustrated. At this point I had an interesting idea to convert a virtual disk to a raw disk image so I have a chance to see what really was happening on this machine.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;convert.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;qemu-img convert -f vdi -O raw vmception.vdi vmdisk.raw
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Before I decided to jump any further, I needed to see if the raw disk is valid and worth my time. That can be done with &lt;code&gt;mmls&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;red@b0x:~/ctf/byuctf&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ mmls vmdisk.raw 
+DOS Partition Table
+Offset Sector: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+Units are in 512-byte sectors
+
+      Slot      Start        End          Length       Description
+000:  Meta      &lt;span style=&#34;color:#ae81ff&#34;&gt;0000000000&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000000000&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000000001&lt;/span&gt;   Primary Table &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#0)&lt;/span&gt;
+001:  -------   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000000000&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000002047&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000002048&lt;/span&gt;   Unallocated
+002:  000:000   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000002048&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039942143&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039940096&lt;/span&gt;   Linux &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x83&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+003:  -------   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039942144&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039944191&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000002048&lt;/span&gt;   Unallocated
+004:  Meta      &lt;span style=&#34;color:#ae81ff&#34;&gt;0039944190&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0041940991&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0001996802&lt;/span&gt;   DOS Extended &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x05&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+005:  Meta      &lt;span style=&#34;color:#ae81ff&#34;&gt;0039944190&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039944190&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000000001&lt;/span&gt;   Extended Table &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#1)&lt;/span&gt;
+006:  001:000   &lt;span style=&#34;color:#ae81ff&#34;&gt;0039944192&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0041940991&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0001996800&lt;/span&gt;   Linux Swap / Solaris x86 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x82&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+007:  -------   &lt;span style=&#34;color:#ae81ff&#34;&gt;0041940992&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0041943039&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0000002048&lt;/span&gt;   Unallocated
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Time to start &lt;strong&gt;AUTOPSY&lt;/strong&gt; and mount the disk for further analysis. Once that was done, I once again looked through the file system for sensitive files, and there it was I found something that helped me understand this challenge even more.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;auto.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;/home/notcosmo/.ssh/namespace-dev-wzFc9H/root/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Specifically it was this command that I instantly took note of.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;cat /bin/ls | gpg --batch --yes 
+--passphrase-fd &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; --output ~/your_vm.vdi -d /var/cache/apt/dpkg.bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It was now time to tear down this command part by part to see what it was doing. We first read the contents of &lt;code&gt;/bin/ls&lt;/code&gt; then pipe &lt;code&gt;|&lt;/code&gt; into a different command, which in our case is &lt;code&gt;gpg --batch --yes --passphrase-fd 0 --output ~/your_vm.vdi -d /var/cache/apt/dpkg.bin&lt;/code&gt;. In simpler words the contents, of &lt;code&gt;ls&lt;/code&gt; are being used to decrypt the &lt;code&gt;dpkg.bin&lt;/code&gt; file which are then outputted to &lt;strong&gt;your_vm.vdi&lt;/strong&gt;. So lets export the &lt;code&gt;.bin&lt;/code&gt; file and try to decrypt it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;export.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Just wanna add a little note here, that deleted file had some really funny text&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;terminal.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the .bin file was exported I decided to run the same command that was found in .bashrc file earlier to see if I can decrypt another virtual disk. Ill tell you right now, it worked, but if did not, we could of pulled out the &lt;code&gt;ls&lt;/code&gt; binary from the original disk and ran it with that ls instead of the one thats on my machine. Just incase the binaries differed.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;exported.vdi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since everything was going fine the way I was doing it. My initial thought was to replicate the same process I just did with the first virtual hard disk. I ran the same qemu command to convert the vdi to a raw disk format.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;qemu-imqemu-img convert -f vdi -O raw exported.vdi another.raw
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;final.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Okay this was really looking promising, I decided to stick with manual disk analysis instead of using &lt;strong&gt;Autopsy&lt;/strong&gt; again. So let&amp;rsquo;s grab the start offset of the &lt;code&gt;Linux (0x83)&lt;/code&gt; partition.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;fls -o &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; another.raw
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;offset.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;fls -o &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; another.raw &lt;span style=&#34;color:#ae81ff&#34;&gt;913922&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;almost.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;When I seen this, got pretty excited not even gonna lie. Now let&amp;rsquo;s grab that &lt;code&gt;flag.txt&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;icat -o &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; another.raw &lt;span style=&#34;color:#ae81ff&#34;&gt;913942&lt;/span&gt; &amp;gt; flag.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;gg.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;FLAG: byuctf{vmsarecool}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;WHOA! That was a challenge , which I really enjoyed. Real shoutout to the challenge dev &lt;code&gt;Echo8358#9560&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;STOKED TO COME 5TH WITH THE BOYS&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;leak.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>PWNME CTF Qualifications - Silver [Forensics] Write-up</title>
+      <link>https://iloveforensics.com/posts/pwnmectf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://iloveforensics.com/posts/pwnmectf/</guid>
+      <description>Difficulty Medium     Category Forensics    First things first, lets download the challenge files and extract them if neccesarry. Once that is done with we will see one important file that we are gonna be working with, which is usb_drive.img.
+Okay great ! We can now proceed further and examine what we are really working with. Lets see what type of file we just extracted is.</description>
+      <content>&lt;p&gt;&lt;img src=&#34;chall.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Difficulty&lt;/th&gt;
+&lt;th&gt;Medium&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Category&lt;/td&gt;
+&lt;td&gt;Forensics&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;First things first, lets download the challenge files and extract them if neccesarry. Once that is done with we will see one important file that we are gonna be working with, which is &lt;code&gt;usb_drive.img&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;files.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Okay great ! We can now proceed further and examine what we are really working with. Lets see what type of file we just extracted is.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;$ file usb_drive.img 
+usb_drive.img: DOS/MBR boot sector
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now that the file type we are working with is known to us, we can surely say its a disk image  with a FAT32 file system. The next step would be to do a read only mount of the disk on our own machine. Which can easily be done with &lt;code&gt;Autopsy&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;adding_img.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s exactly what we wanted to see ! Now its time to go further down and see whats inside the file system.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;inside_fs.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;NOTE &amp;ndash;&amp;gt;&lt;/strong&gt; Those files that we see that are highlighted with red are deleted files on the disk. Which also means they would be the most interesting to look at once recovered. So lets export them to a folder on our machine.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;DOING ALL THIS WOULD BE BETTER IN A VM, THAT IS READY TO BE BROKEN. BECAUSE ONCE AGAIN WE ARE DEALING WITH REAL WORLD MALWARE.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;exported.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;This was the part that probably took me the longest to do, and im sure a lot of other teams got stuck on this part for awhile. I examied the &lt;code&gt;.sh&lt;/code&gt; script and it wasnt doing anything interesting that could help us further down in the investigation. On top of that i did full &lt;code&gt;Steganography Analysis&lt;/code&gt; on both , the PDF and PNG, yet i havent found anything. Finally there was one file left which was an &lt;strong&gt;ELF&lt;/strong&gt; executable. It started with basic static analysis of the binary, for example checking strings and throwing it in Ghidra. Later i found out that the binary was written in GoLang and for me it would be pretty hard to Reverse Engineer it, so i decided to try running it inside a VM that is isolated from my host and internal network. Not only that but i also captured traffic on wireshark for potential network based indicators.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;I ran this binary throught Virus Total and Hybrid Analysis and both of the vendors flagged it as malicious&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;vm.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Right after this i quickly downloaded Wireshark with &lt;code&gt;sudo apt install wireshark&lt;/code&gt; and was ready to see whats inside this malware.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;network.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Lets see whats going on in those packets , we see that my host is trying to reach out to &lt;code&gt;178.62.67.181:443&lt;/code&gt;. But it was unsuccessful, instead how about we try to go to the website ourselves. Obviously safety is first so im gonna be using &lt;code&gt;https://www.hidemyass.com/en-us/proxy&lt;/code&gt; to access that website.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;flag.png&#34; alt=&#34;Could N0t B3 L04d3d :(&#34;&gt;&lt;/p&gt;
+&lt;p&gt;WOAH ! Once we got to the website , we see an image at first my heart dropped because i thought there was gonna be more to it, but once looked at closely i found the flag !&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;PWNME&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;1_L0v3_U53_C2&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After all this challenge was definetely fun and enjoying in a way. I&amp;rsquo;ve learned to not overthink simplest things and hopefully that will stay with me for the future tournaments with my team.&lt;/p&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>
