@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>  UIUCTF 2023 - Tornado Warning [Radio Frequency] :: Welcome</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ALERT ! ALERT ! This was definitely the coolest radio challenge I have seen. Was based around the Specific Area Message Encoding protocol." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://iloveforensics.com/posts/uiuctf/" />
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://iloveforensics.com/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://iloveforensics.com/firewall.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="  UIUCTF 2023 - Tornado Warning [Radio Frequency]">
+<meta property="og:description" content="ALERT ! ALERT ! This was definitely the coolest radio challenge I have seen. Was based around the Specific Area Message Encoding protocol." />
+<meta property="og:url" content="https://iloveforensics.com/posts/uiuctf/" />
+<meta property="og:site_name" content="Welcome" />
+
+  
+    <meta property="og:image" content="https://iloveforensics.com/firewall.png">
+  
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body class="red">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/home">
+  <div class="logo">
+    [root@b0x:~]# 
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/home">Home</a></li>
+        
+      
+        
+          <li><a href="/posts">Write-ups</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/home">Home</a></li>
+        
+      
+        
+          <li><a href="/posts">Write-ups</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://iloveforensics.com/posts/uiuctf/">UIUCTF 2023 - Tornado Warning [Radio Frequency]</a>
+  </h1>
+  <div class="post-meta">
+    
+    
+    
+  </div>
+
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p><img src="chal.png" alt="Could N0t B3 L04d3d :("></p>
+<table>
+<thead>
+<tr>
+<th>Difficulty</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Extreme</strong></td>
+<td><strong>RADIO FREQ</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Here we go again, let&rsquo;s first download the file from the challenge attachments and see what we are working with this time. Once the file is on our machine its time to run the <code>file</code> command to determine the type and it might be useful to run <code>exiftool</code> as well.</p>
+<p><img src="fileo.png" alt="Could N0t B3 L04d3d :("></p>
+<p>Doing simple checks tells us that the file is valid and flag is for sure hidden inside the <strong><code>.wav</code></strong> file, but what can we do next ? My next step was to check it out inside <strong>AUDACITY</strong> and view the spectogram.</p>
+<p><img src="spec.png" alt="Could N0t B3 L04d3d :("></p>
+<p>Once that was done, I didn&rsquo;t achieve anything. After all this challenge is not related to Steganography in anyway and even if it was, there would definitely be more steps to it, regarding the challenge difficulty. My next step was to play the WAVE file and listen to it carefully. I quickly realized that this was a severe weather alert message.
+If anyone is wondering, this is how it sounds
+<code>https://www.youtube.com/watch?v=VPGczKUlgd8</code> . So what&rsquo;s next ? RESEARCH of course ! After some googling around I found an interesting protocol <code>SAME</code> this protocol stands for <strong>Specific Message Area Encoding</strong> which is used by the Weather Radios in USA and Canada, as well as the <strong>Emergency Alert System</strong> on television and radio.</p>
+<p><img src="info.png" alt="Could N0t B3 L04d3d :("></p>
+<p>You may ask &ldquo;but how can we be sure its the right protocol used for this challenge ?&rdquo; . Well remember how I said the spectogram did not mean anything ? It actually did mean a lot to us , as it shows the actual structure of the <strong>SAME</strong> message transmitted over the radio. The first <strong>3</strong> data bursts contain a digital <code>message</code> packet followed by a long alert tone which is <strong>then</strong> followed by the actual announcement message. Amazing :) now we have an idea what we need to do, is to decode the message and see what it was transmitting. I found a decoder online which I will use <code>SeaTTY</code>, but it was for windows only so&hellip; let me start up my virtual machine really quick and I&rsquo;ll get back to you.</p>
+<p><img src="seat.png" alt="Could N0t B3 L04d3d :("></p>
+<p>Okay this is going pretty well , we are learning ! One thing to note here is to select the <strong><code>NWR-SAME</code></strong> mode for the decoder. Once that was done we play the message and pray it works.</p>
+<p><img src="fdcode.png" alt="Could N0t B3 L04d3d :("></p>
+<p>That is exactly what I was waiting for. We got the proper decoded data bursts from the SAME protocol. Which are :</p>
+<pre tabindex="0"><code>ZCZC-UXU-TFR-R18007ST_45-0910BR5-KIND3RWS-
+ZCZC-WIR-TO{3018W0R+00T5-09UT115-K_EV/NWS-
+ZCZC-WXRCTOR-0D_007+004OR_O1011E@KIND/N}S-
+</code></pre><p>Since I&rsquo;ve done some research online on how these messages are structured, I can explain on what each part means, but first thing before I forget. We need to know that it will repeat three times to try to possibly eliminate any errors from poor reception. The correct data will be chosen using a columnar parity error algorithm. Therefore <code>ZCZC</code> is the <strong>Message Activation Code</strong> after that comes <code>WXR</code> which is the Originator for example <strong>NOAA Weather Radio</strong>, followed by that we have <code>TOR</code> which means it is a <strong>Tornado Warning</strong>, the first <code>-******</code> can mean pretty much anything and so do the other ones. Below I will add a few images so that we can better understand the concept. As well as, a youtube video which goes in depth.</p>
+<p><img src="u1.png" alt="Could N0t B3 L04d3d :("></p>
+<p><img src="u2.png" alt="Could N0t B3 L04d3d :("></p>
+<p><code>https://www.youtube.com/watch?v=OpLFRGcm7_k</code></p>
+<p>At this point I needed to find a tool to decode the message and I did.</p>
+<p><img src="full.png" alt="Could N0t B3 L04d3d :("></p>
+<p><strong>The National Weather Service in Indianapolis, Indiana has issued a Tornado
+Warning valid until 10:00 PM for the following counties in Indiana: Benton.
+(KIND/NWS)</strong> . UHHH what where is the flag? This really got me confused so I decided to open the ticket with the organizers for a sanity check and I got this.</p>
+<p><img src="lol.png" alt="Could N0t B3 L04d3d :("></p>
+<p>Found it pretty funny, but seems like we need to go back and see what we are working with. After staring down on the decoded strings something clicked in my head and I saw the pattern for the flag.</p>
+<pre tabindex="0"><code>ZCZC-UXU-TFR-R18007ST_45-0910BR5-KIND3RWS-
+ZCZC-WIR-TO{3018W0R+00T5-09UT115-K_EV/NWS-
+ZCZC-WXRCTOR-0D_007+004OR_O1011E@KIND/N}S-
+</code></pre><p>Taking a look again there is one unique character that is different in each message so we need to grab it one by one and build it to the flag.</p>
+<p><img src="flag.png" alt="Could N0t B3 L04d3d :("></p>
+<p>WHEW ! That was very fun :) we got the flag and the valuable points that my team needed to come 33rd out of 1200+ teams. Special shoutout to my teammates <strong>Suvoni</strong> and <strong>kibeththewalker</strong> for sticking with me for this challenge <code>GG</code> !</p>
+<p><code>FLAG: uiuctf{3RD_W0RST_TOR_OUTBRE@K_EV3R}</code></p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read Other Posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://iloveforensics.com/posts/nahamcon/">
+                <span class="button__text"> NahamCon CTF 2023 - Incident Response Challenges [DFIR] </span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>🔒 0x157</span>
+    
+      <span></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+
+</body>
+</html>
