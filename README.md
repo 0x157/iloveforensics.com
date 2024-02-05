@@ -1,3 +1,6 @@
+## THIS BLOG IS CURRENTLY GETTING MIGRATED TO A NEW THEME AND HUGO -> JEKYLL 
+
+
 ### Above you can find the source code my website / blog
 
 ![image](https://github.com/0x157/iloveforensics.com/assets/102762345/98243cde-6361-449a-a719-1829f2b67671)
