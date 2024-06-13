@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://iloveforensics.com/sitemap-index.xml
